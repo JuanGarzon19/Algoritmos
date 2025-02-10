@@ -1,0 +1,112 @@
+#include<iostream>
+
+using namespace std;
+
+class Vector {
+    
+    int* v; //puntero a un arreglo de enteros que guarda los elementos del vector
+    int capacidad; //guarda la capacidad máxima del vector
+    int tamanno; //guarda el número de elementos actualmente almacenados en el vector
+
+public:
+    Vector () { // Constructor por defecto. Inicializa la capacidad del vector a 10 y el tamaño a 0
+        capacidad =10;
+        tamanno=0;
+        v= new int[capacidad]; // Asigna memoria para el arreglo con capacidad inicial de 10
+    }
+    
+    Vector (int c) { // Constructor que recibe la capacidad del vector como parámetro
+        capacidad =c;
+        tamanno=0;
+        v= new int[capacidad]; // Asigna memoria para el arreglo con la capacidad dada
+    }
+    
+    void add(int d) { // Método que agrega un elemento al vector. Si el tamaño alcanza la capacidad, redimensiona el vector.
+        if(tamanno==capacidad) { // Si el tamaño alcanza la capacidad máxima, redimensiona el vector
+            resize();
+        }
+        v[tamanno++]=d; // Asigna el valor al arreglo y aumenta el tamaño del vector
+    }
+    
+    void print() { // Método para imprimir los elementos del vector
+        if (tamanno == 0) {
+            cout << "El vector está vacío." << endl; // Mensaje si el vector está vacío
+        } else {
+            cout << "Elementos del vector: ";
+            for(int i=0; i<tamanno; i++) { // Recorre desde el índice 0 hasta el tamaño actual del vector
+                cout<<v[i]<<" "; // Imprime el valor de cada elemento
+            }
+            cout << endl;
+        }
+    }
+    
+    int getsize() { // Devuelve el tamaño actual del vector (número de elementos almacenados)
+        return tamanno; 
+    }
+    
+    int getcapacity() { // Devuelve la capacidad actual del vector (cantidad de memoria asignada)
+        return capacidad; 
+    }
+    
+    int geti(int n) { // Devuelve el elemento en la posición n. Si n está fuera del rango, retorna -1.
+        if (n>=tamanno || n<0) { // Si el índice está fuera de rango, retorna -1
+            return -1;
+        }
+        else {
+            return v[n]; // Si el índice es válido, devuelve el valor en esa posición
+        }
+    }
+    
+    void resize() { // Método para redimensionar el vector duplicando su capacidad
+        int* copia; 
+        capacidad*=2; // Duplica la capacidad del vector
+        copia=new int[capacidad]; // Crea un nuevo arreglo con la nueva capacidad
+        for (int i=0; i<tamanno; i++) { // Copia todos los elementos del vector original al nuevo
+            copia[i]=v[i];
+        }
+        delete []v; // Elimina el arreglo original para liberar memoria
+        v=copia; // Actualiza el puntero v para que apunte al nuevo arreglo
+    }
+    
+    void insertar(int valor, int posicion) { // Método para insertar un valor en una posición específica
+        if(tamanno+1==capacidad) { // Si el vector está lleno, redimensiona el vector
+            resize();
+        }
+        for(int i=posicion; i<tamanno+1; i++) { // Desplaza los elementos a la derecha a partir de la posición indicada
+            v[i+1] = v[i]; // Desplaza el elemento a la derecha para hacer espacio
+        }
+        v[posicion] = valor; // Inserta el nuevo valor en la posición indicada
+        tamanno++; // Incrementa el tamaño del vector
+    }
+    
+    ~Vector(){ // Destructor que libera la memoria ocupada por el arreglo dinámico
+        delete[]v; // Elimina el arreglo para evitar fugas de memoria
+    }
+};
+
+int main() {
+    srand(time(0)); // Inicializa la semilla para generar números aleatorios
+    Vector v; // Crea un objeto de tipo Vector
+    cout << "Añadiendo 15 números aleatorios al vector..." << endl;
+    for (int i=0; i<15; i++) { // Llena el vector con 15 valores aleatorios entre 0 y 99
+        v.add(rand()%100); 
+    }
+
+    // Imprime información del vector
+    v.print(); // Imprime los elementos del vector
+    cout << "Tamaño del vector: " << v.getsize() << endl; // Imprime el tamaño del vector
+    cout << "Capacidad del vector: " << v.getcapacity() << endl; // Imprime la capacidad del vector
+
+    // Intentos de acceder a elementos
+    cout << "Elemento en la posición 2: " << (v.geti(2) != -1 ? to_string(v.geti(2)) : "Índice fuera de rango") << endl;
+    cout << "Elemento en la posición 15: " << (v.geti(15) != -1 ? to_string(v.geti(15)) : "Índice fuera de rango") << endl;
+    cout << "Elemento en la posición -2: " << (v.geti(-2) != -1 ? to_string(v.geti(-2)) : "Índice fuera de rango") << endl;
+    
+    // Probar inserción
+    cout << "\nInsertando valor 999 en la posición 5..." << endl;
+    v.insertar(999, 5); 
+    v.print(); // Imprime el vector después de la inserción
+
+    return 0; // Termina la ejecución del programa
+}
+
