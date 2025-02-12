@@ -1,0 +1,151 @@
+#include<iostream>
+
+using namespace std;
+
+class Matriz {
+    int** m;
+    int fils;
+    int cols;
+
+public:
+    // Constructor por defecto (5x4)
+    Matriz() : fils(5), cols(4) {
+        m = new int*[fils];
+        for (int i = 0; i < fils; i++) {
+            m[i] = new int[cols]();  // Inicializa la matriz con ceros
+        }
+    }
+
+    // Constructor con dimensiones personalizadas
+    Matriz(int f, int c) : fils(f), cols(c) {
+        m = new int*[fils];
+        for (int i = 0; i < fils; i++) {
+            m[i] = new int[cols]();  // Inicializa la matriz con ceros
+        }
+    }
+
+    // Destructor
+    ~Matriz() {
+        for (int i = 0; i < fils; i++) {
+            delete[] m[i];
+        }
+        delete[] m;
+    }
+
+    // Imprimir la matriz
+    void print() const {
+        for (int i = 0; i < fils; i++) {
+            for (int j = 0; j < cols; j++) {
+                cout << m[i][j] << "\t";
+            }
+            cout << endl;
+        }
+    }
+
+    // Obtener el valor en la posición (f, c)
+    int get(int f, int c) const {
+        if (f >= 0 && f < fils && c >= 0 && c < cols) {
+            return m[f][c];
+        } else {
+            cout << "Índice fuera de rango" << endl;
+            return -1;  // Valor de error
+        }
+    }
+
+    // Establecer un valor en la posición (f, c)
+    void set(int f, int c, int d) {
+        if (f >= 0 && f < fils && c >= 0 && c < cols) {
+            m[f][c] = d;
+        } else {
+            cout << "Índice fuera de rango" << endl;
+        }
+    }
+
+    // Agregar una fila al final
+    void addFila() {
+        // Crear una nueva matriz con una fila más
+        int** nuevaMatriz = new int*[fils + 1];
+        for (int i = 0; i < fils; i++) {
+            nuevaMatriz[i] = m[i];
+        }
+
+        // Agregar la nueva fila, inicializada en ceros
+        nuevaMatriz[fils] = new int[cols](); 
+
+        // Borrar la antigua matriz y actualizar el puntero
+        delete[] m;
+        m = nuevaMatriz;
+        fils++;  // Aumentar el número de filas
+    }
+
+    // Agregar una columna al final
+    void addColumna() {
+        for (int i = 0; i < fils; i++) {
+            // Crear una nueva fila con una columna más
+            int* nuevaFila = new int[cols + 1];
+
+            // Copiar los elementos antiguos
+            for (int j = 0; j < cols; j++) {
+                nuevaFila[j] = m[i][j];
+            }
+
+            // Inicializar la nueva columna en ceros
+            nuevaFila[cols] = 0;
+
+            // Eliminar la fila antigua y actualizar el puntero
+            delete[] m[i];
+            m[i] = nuevaFila;
+        }
+        cols++;  // Aumentar el número de columnas
+    }
+
+    // Agregar un valor al final de la última fila
+    void add(int d) {
+        int* nuevaFila = new int[cols + 1];
+        for (int i = 0; i < cols; i++) {
+            nuevaFila[i] = m[fils - 1][i];
+        }
+        nuevaFila[cols] = d;  // Asignamos el valor en la nueva columna
+        delete[] m[fils - 1];
+        m[fils - 1] = nuevaFila;
+        cols++;  // Aumentar el número de columnas
+    }
+    
+    // Obtener el número de filas
+    int getFils() const {
+        return fils;
+    }
+
+    // Obtener el número de columnas
+    int getCols() const {
+        return cols;
+    }
+};
+
+int main() {
+    srand(time(0));
+    
+    int f = 8;
+    int c = 3;
+    Matriz m(f, c);
+    
+    // Llenar la matriz con valores aleatorios
+    for (int i = 0; i < f; i++) {
+        for (int j = 0; j < c; j++) {
+            m.set(i, j, rand() % 100);
+        }
+    }
+    
+    cout << "Matriz inicial:" << endl;
+    m.print();
+    
+    // Agregar una fila y una columna
+    m.addFila();
+    m.addColumna();
+    m.set(8, 3, 99);  // Asignamos un valor a la nueva celda
+    
+    cout << "\nMatriz después de agregar una fila y una columna:" << endl;
+    m.print();
+    
+    return 0;
+}
