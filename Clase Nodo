@@ -1,0 +1,121 @@
+#include<iostream>  // Incluir la librería estándar de entrada y salida
+
+using namespace std;  // Usar el espacio de nombres estándar para simplificar el código
+
+// Clase Nodo: representa un nodo de una lista enlazada
+class Nodo {
+    int dato;  // Variable para almacenar el dato del nodo
+    Nodo* next;  // Puntero al siguiente nodo en la lista
+
+public:
+    // Constructor por defecto que inicializa el dato en 0 y el puntero a null
+    Nodo() {
+        dato = 0;
+        next = nullptr;
+    }
+
+    // Constructor con un valor para el dato y puntero al siguiente nodo en null
+    Nodo(int d) {
+        dato = d;
+        next = nullptr;
+    }
+
+    // Método para obtener el dato del nodo
+    int getDato() {
+        return dato;
+    }
+
+    // Método para asignar un valor al dato del nodo
+    void setDato(int d) {
+        dato = d;
+    }
+
+    // Método para obtener el puntero al siguiente nodo
+    Nodo* getNext() {
+        return next;
+    }
+
+    // Método para asignar un puntero al siguiente nodo
+    void setNext(Nodo* n) {
+        next = n;
+    }
+
+    // Método para convertir el dato del nodo a una cadena de caracteres
+    string to_string() {
+        return std::to_string(dato);  // Convierte el dato a string
+    }
+};
+
+// Clase Lista: representa una lista enlazada simple
+class Lista {
+    Nodo* ptr;  // Puntero al primer nodo de la lista
+
+public:
+    // Constructor por defecto que inicializa la lista vacía (puntero a null)
+    Lista() {
+        ptr = nullptr;
+    }
+
+    // Método para agregar un nuevo nodo al final de la lista
+    void add(int d) {
+        Nodo* n = new Nodo(d);  // Crear un nuevo nodo con el dato dado
+        if(ptr == nullptr) {  // Si la lista está vacía
+            ptr = n;  // El nuevo nodo es el primer nodo
+        } else {  // Si la lista no está vacía
+            Nodo* temp = ptr;  // Usar un puntero temporal para recorrer la lista
+            while(temp->getNext() != nullptr) {  // Recorrer hasta el final de la lista
+                temp = temp->getNext();
+            }
+            temp->setNext(n);  // Enlazar el último nodo con el nuevo nodo
+        }
+    }
+};
+
+int main() {
+    Nodo n(5);  // Crear un nodo con dato 5
+    cout << n.getNext() << endl;  // Imprimir la dirección de memoria del siguiente nodo (debe ser nullptr al principio)
+    cout << n.to_string() << endl;  // Imprimir el dato del nodo como string (debería ser "5")
+
+    Nodo n2(6);  // Crear otro nodo con dato 6
+    n.setNext(&n2);  // Enlazar el primer nodo con el segundo nodo
+    cout << &n2 << " " << n.getNext() << endl;  // Imprimir las direcciones de memoria de los dos nodos (n2 y el siguiente de n)
+    cout << (*n.getNext()).to_string() << endl;  // Obtener el siguiente nodo y mostrar su dato como string (debería ser "6")
+    cout << n.getNext()->to_string() << endl;  // Usar el puntero directamente para mostrar el dato como string
+
+    // Crear un nuevo nodo con dato 7 y enlazarlo al nodo n2
+    n2.setNext(new Nodo(7));  
+    cout << n2.getNext()->to_string() << endl;  // Imprimir el dato del nodo enlazado (debería ser "7")
+
+    // Crear una lista y agregar 10 números aleatorios a la lista
+    srand(1234);  // Inicializar la semilla para números aleatorios
+    Lista l;  // Crear una lista vacía
+    for(int i = 0; i < 10; i++) {  // Agregar 10 nodos con valores aleatorios entre 0 y 99
+        l.add(rand() % 100);
+    }
+
+    return 0;  // Fin del programa
+}
+
+-----------------------------------------------------------------------------------------------------------------------------------
+
+Explicación de las partes del código:
+Clase Nodo:
+
+Atributos:
+dato: Guarda el valor que almacena el nodo.
+next: Es un puntero al siguiente nodo en la lista enlazada.
+Métodos:
+Los métodos getDato() y setDato() permiten acceder y modificar el valor del nodo.
+Los métodos getNext() y setNext() permiten acceder y modificar el puntero al siguiente nodo.
+El método to_string() convierte el valor almacenado en el nodo a una cadena.
+Clase Lista:
+
+Atributos:
+ptr: Un puntero al primer nodo de la lista.
+Métodos:
+El método add() agrega un nuevo nodo con el valor dado al final de la lista. Si la lista está vacía, el nuevo nodo se convierte en el primer nodo.
+En el main():
+
+Se crean y enlazan nodos para mostrar cómo se manejan las direcciones de memoria y cómo se accede a los datos.
+Se llena la lista con 10 nodos, cuyos valores se generan de manera aleatoria.
+Este código ilustra cómo funciona una lista enlazada simple en C++ y cómo se manejan los punteros para conectar los nodos entre sí.
