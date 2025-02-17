@@ -1,0 +1,207 @@
+#include<iostream>  // Importa la biblioteca estándar para manejo de entrada/salida.
+
+using namespace std;  // Utiliza el espacio de nombres estándar para evitar tener que usar "std::" cada vez.
+
+class Nodo {
+    int dato;           // Almacena el valor de cada nodo de la lista.
+    Nodo* next;         // Apunta al siguiente nodo en la lista.
+    
+public:
+    // Constructor por defecto
+    Nodo() {
+        dato = 0;       // Inicializa el valor del nodo en 0.
+        next = nullptr; // Inicializa el puntero al siguiente nodo como nulo.
+    }
+    
+    // Constructor con un valor
+    Nodo(int d) {
+        dato = d;       // Inicializa el nodo con el valor dado.
+        next = nullptr; // Inicializa el puntero al siguiente nodo como nulo.
+    }
+    
+    // Método que retorna el valor del nodo
+    int getdato() {
+        return dato;
+    }
+    
+    // Método que retorna el puntero al siguiente nodo
+    Nodo* getnext() {
+        return next;
+    }
+    
+    // Método que asigna un valor al nodo
+    void setdato(int d) {
+        dato = d;
+    }
+    
+    // Método que asigna un puntero al siguiente nodo
+    void setnext(Nodo* n) {
+        next = n;
+    }
+    
+    // Método que convierte el dato del nodo a una cadena de texto
+    string to_string() {
+        return std::to_string(dato);  // Convierte el entero a cadena de texto.
+    }
+};
+
+class Lista {
+    Nodo* ptr;  // Puntero al primer nodo de la lista.
+    
+public:
+    // Constructor de la lista, inicializa el puntero como nulo
+    Lista() {
+        ptr = nullptr;
+    }
+    
+    // Método para agregar un nodo al final de la lista
+    void add(int d) {
+        Nodo* n = new Nodo(d);  // Crea un nuevo nodo con el valor dado.
+        if(ptr == nullptr) {  // Si la lista está vacía
+            ptr = n;  // El nuevo nodo es el primero de la lista.
+        }
+        else {
+            Nodo* temp = ptr;
+            // Recorre la lista hasta el último nodo
+            while(temp->getnext() != nullptr) {
+                temp = temp->getnext();
+            }
+            temp->setnext(n);  // Establece el nuevo nodo como el siguiente del último nodo.
+        }
+    }
+    
+    // Método para imprimir todos los valores de la lista
+    void print() {
+        Nodo* temp = ptr;
+        while(temp->getnext() != nullptr) {
+            cout << temp->getdato() << " ";  // Imprime el dato del nodo.
+            temp = temp->getnext();  // Avanza al siguiente nodo.
+        }
+        cout << temp->getdato() << " ";  // Imprime el último nodo (sin next).
+        cout << endl;
+    }
+    
+    // Método para obtener el valor en una posición específica de la lista
+    int getiv(int v) {
+        Nodo* temp = ptr;
+        for (int i = 0; i < v; i++) {  // Recorre la lista hasta la posición deseada.
+            temp = temp->getnext();
+            if(temp == nullptr) {  // Si se alcanza el final de la lista sin encontrar la posición
+                cout << "pailas" << endl;  // Mensaje de error
+                return -1;  // Retorna un valor inválido.
+            }
+        }
+        return temp->getdato();  // Retorna el dato en la posición indicada.
+    }
+    
+    // Método para obtener el nodo en una posición específica
+    Nodo* getid(int v) {
+        Nodo* temp = ptr;
+        for (int i = 0; i < v; i++) {  // Recorre la lista hasta la posición deseada.
+            temp = temp->getnext();
+            if(temp == nullptr) {  // Si se alcanza el final de la lista sin encontrar el nodo
+                cout << "pailas" << endl;  // Mensaje de error
+                return temp;  // Retorna nullptr.
+            }
+        }
+        return temp;  // Retorna el nodo en la posición indicada.
+    }
+    
+    // Método para encontrar la posición de un nodo con un valor específico
+    void find(int v) {
+        Nodo* temp = ptr;
+        int contador = 0;
+        while(temp->getdato() != v) {  // Recorre la lista buscando el valor.
+            temp = temp->getnext();
+            contador++;
+            if(temp == nullptr) {  // Si el valor no se encuentra en la lista
+                cout << "pailas" << endl;  // Mensaje de error
+                return;
+            }
+        }
+        
+        cout << contador << endl;  // Muestra la posición del nodo con el valor buscado.
+    }
+    
+    // Método para cambiar el valor en una posición específica de la lista
+    void seti(int p, int v) {
+        Nodo* temp = ptr;
+        for (int i = 0; i < p; i++) {  // Recorre la lista hasta la posición indicada.
+            temp = temp->getnext();
+        }
+        temp->setdato(v);  // Cambia el dato del nodo en esa posición.
+    }
+    
+    // Método para insertar un nuevo nodo en una posición específica
+    void insertar(int p, int v) {
+        Nodo* n = new Nodo(v);  // Crea el nuevo nodo con el valor dado.
+        Nodo* temp;
+        if(p == 0) {  // Si se desea insertar en la primera posición
+            temp = ptr;
+            ptr = n;
+            n->setnext(temp);  // El nuevo nodo apunta al antiguo primer nodo.
+            return;
+        }
+        temp = getid(p - 1);  // Obtiene el nodo antes de la posición donde se quiere insertar.
+        if(temp == nullptr) {  // Si no existe la posición anterior
+            return;
+        }
+        n->setnext(temp->getnext());  // El nuevo nodo apunta al siguiente nodo de la posición deseada.
+        temp->setnext(n);  // El nodo anterior apunta al nuevo nodo.
+    }
+    
+    // Método para eliminar un nodo en una posición específica
+    void eliminar(int p) {
+        Nodo* temp1;
+        Nodo* temp2;
+        if(p == 0) {  // Si se desea eliminar el primer nodo
+            temp1 = ptr;
+            ptr = ptr->getnext();  // El puntero al primer nodo se mueve al siguiente.
+            delete temp1;  // Se elimina el primer nodo.
+            return;
+        }
+        temp2 = getid(p);  // Obtiene el nodo a eliminar.
+        if(temp2 == nullptr) {  // Si no existe la posición
+            return;
+        }
+        temp1 = getid(p - 1);  // Obtiene el nodo anterior al que se va a eliminar.
+        temp1->setnext(temp2->getnext());  // El nodo anterior apunta al siguiente del nodo eliminado.
+        delete temp2;  // Se elimina el nodo.
+    }
+};
+
+int main() {
+    Nodo n;  // Crea un nodo vacío.
+    n.setdato(5);  // Asigna el valor 5 al nodo.
+    cout << n.getnext() << endl;  // Muestra el puntero al siguiente nodo (nullptr en este caso).
+    cout << n.to_string() << endl;  // Muestra el valor del nodo como cadena.
+    
+    Nodo n2(6);  // Crea un nodo con el valor 6.
+    n.setnext(&n2);  // El primer nodo apunta al segundo nodo.
+    cout << &n2 << " " << n.getnext() << endl;  // Muestra la dirección de memoria de n2 y el puntero del primer nodo.
+    cout << n.getnext()->to_string() << endl;  // Muestra el valor del segundo nodo.
+    
+    n2.setnext(new Nodo(7));  // El segundo nodo apunta a un tercer nodo con el valor 7.
+    cout << n2.getnext()->to_string() << endl;  // Muestra el valor del tercer nodo.
+    
+    // A continuación se manipula la lista enlazada
+    cout << "**************************************************************************************************" << endl;
+    
+    srand(1234);  // Inicializa el generador de números aleatorios con una semilla.
+    Lista l;  // Crea una lista vacía.
+    for(int i = 0; i < 10; i++) {
+        l.add(rand() % 100);  // Añade 10 nodos con valores aleatorios entre 0 y 99.
+    }
+    l.print();  // Imprime la lista de nodos.
+    cout << l.getiv(1) << endl;  // Muestra el valor del nodo en la posición 1.
+    cout << l.getid(1) << endl;  // Muestra la dirección de memoria del nodo en la posición 1.
+    l.find(18);  // Busca la posición del valor 18 en la lista.
+    l.seti(5, 1);  // Cambia el valor del nodo en la posición 5 por 1.
+    l.print();  // Imprime la lista actualizada.
+    l.insertar(2, 66);  // Inserta un nodo con el valor 66 en la posición 2.
+    l.print();  // Imprime la lista después de la inserción.
+    l.eliminar(5);  // Elimina el nodo en la posición 5.
+    l.print();  // Imprime la lista después de la eliminación.
+    
+    return 0;  // Fin del programa.
+}
