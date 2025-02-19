@@ -1,0 +1,61 @@
+#include<iostream>
+
+using namespace std;
+
+class Nodo {
+    int dato;
+    nodo* siguiente;
+    
+public: 
+    Nodo() { //constructor por defecto
+        dato = 0;
+        siguiente = nullptr;
+    }
+    
+    Nodo(int d){ //constructor con un valor
+        dato = d;
+        siguiente = nullptr;
+    }
+    
+    int obtenerdato() {  // Método que retorna el valor del nodo
+        return dato;
+    }
+    
+    Nodo* obtenersiguiente(){ // Método que retorna el puntero al siguiente nodo
+        return siguiente;
+    }
+    
+    void establecerdato(int d){ // Método que asigna un valor al nodo
+        dato = d;
+    }
+    
+    void establecersiguiente(Nodo* n){ // Método que asigna un puntero al siguiente nodo
+        next = n;
+    }
+    
+    string to_string() { // Método que convierte el dato del nodo a una cadena de texto
+        return std::to_string(dato);  // Convierte el entero a cadena de texto.
+    }
+};
+
+class Lista {
+    Nodo* ptr; // Puntero al primer nodo de la lista.
+    
+public:
+    Lista(){ // Constructor de la lista, inicializa el puntero como nulo
+        ptr = nullptr;
+    }
+    
+    void añadir(int d) {
+        Nodo* n = new Nodo(d); // Crea un nuevo nodo con el valor dado.
+        if(ptr == nullptr) { // Si la lista está vacía
+            ptr = n; // El nuevo nodo es el primero de la lista.
+        }
+        else {
+            Nodo* temporal = ptr;
+            while(temporal->obtenersiguiente() != nullptr) { // Recorre la lista hasta el último nodo 
+                temporal = temporal->obtenersiguiente();
+            }
+            temporal->establecersiguiente(n); // Establece el nuevo nodo como el siguiente del último nodo.
+    }
+}
