@@ -1,0 +1,354 @@
+#include<iostream>
+
+using namespace std;
+
+template <typename T>
+class Node{
+    T dato;
+    Node* next;
+public:
+    Node(){
+        next = NULL;
+    }
+    
+    Node(T d){
+        dato = d;
+        next = NULL;
+    }
+    
+    ~Node(){
+        //delete dato;
+    }
+    
+    T getDato(){
+        return dato;
+    }
+    
+    void setDato(T d){
+        dato = d;
+    }
+    
+    Node* getNext(){
+        return next;
+    }
+    
+    void setNext(Node* n){
+        next = n;
+    }
+};
+
+template <typename T>
+class Lista{
+    Node<T>* ptr;
+    int size;
+public:
+    Lista(){
+        ptr = NULL;
+        size = 0;
+    }
+    
+    void add(T d){
+        if(ptr == NULL){
+            ptr = new Node<T>(d);
+        }else{
+            Node<T>* temp = ptr;
+            while(temp->getNext() != NULL){
+                temp = temp->getNext();
+            }
+            temp->setNext(new Node<T>(d));
+        }
+        size++;
+    }
+    
+    Node<T>* get(int i){
+        if(i >= 0 && i < size){
+            int cont=0;
+            Node<T>* temp = ptr;
+            while(cont < i && temp != NULL){
+                temp = temp->getNext();
+                cont++;
+            }
+            return temp;
+        }
+        
+        return NULL;
+    }
+    
+    void print(){
+        Node<T>* temp = ptr;
+        while(temp != NULL){
+            cout<<temp->getDato()<<endl;
+            temp = temp->getNext();
+        }
+    }
+    
+    int get_size(){
+        return size;
+    }
+    
+    void remove(int i){
+        if (i >= 0 && i < size) {
+            Node<T>* temp = ptr;
+            if (i == 0) { // Si el nodo a eliminar es el primero
+                ptr = ptr->getNext();
+                delete temp;
+            } else {
+                int cont = 0;
+                while (cont < i - 1) {
+                    temp = temp->getNext();
+                    cont++;
+                }
+                Node<T>* toDelete = temp->getNext();
+                temp->setNext(toDelete->getNext());
+                delete toDelete;
+            }
+            size--;
+        }
+    }
+    
+};
+
+class MatrizPublicaciones {
+    int** m; //Matriz de presentaciones
+    int* v;  //Vector que lleva la cuenta de cuantos artículos hay en cada columna
+    int f;   //Filas
+    int c;   //Columnas
+public:
+    MatrizPublicaciones(){
+        f = 10;
+        c = 10;
+        crear_mat();
+    }
+    
+    MatrizPublicaciones(int fi, int co){
+        f = fi;
+        c = co;
+        crear_mat();
+    }
+    
+    void crear_mat(){
+        m = new int*[f];  // Crear las filas de la matriz
+        for (int i = 0; i < f; i++) {
+            m[i] = new int[c];
+            for (int j = 0; j < c; j++) {
+                m[i][j] = -1;  // Inicializar la matriz con -1
+            }
+        }
+        v = new int[c]();  // Inicializar el vector v en 0
+    }
+    
+    void print(){
+        for (int i = 0; i < f; i++) {
+            for (int j = 0; j < c; j++) {
+                if (m[i][j] == -1) {
+                    cout << "- ";  // Si el valor es -1, imprimimos un guion
+                } else {
+                    cout << m[i][j] << " ";  // Imprimir el ID del artículo
+                }
+            }
+            cout << endl;
+        }
+    }
+    
+    void addValInColumna(int co, int dato){
+        if (v[co] >= f) {  // Si la columna está llena, añade una nueva fila
+            add_fila();
+        }
+        m[v[co]][co] = dato;  // Colocar el dato en la fila y columna correspondiente
+        v[co]++;  // Incrementar el contador de artículos en esa columna
+    }
+    
+    void add_fila(){
+        int new_f = f + 1;
+        int** new_m = new int*[new_f];
+        for (int i = 0; i < f; i++) {
+            new_m[i] = m[i];
+        }
+        new_m[f] = new int[c]();  // Crear la nueva fila e inicializarla con 0s
+    
+        // Reasignar el puntero de la matriz
+        delete[] m;
+        m = new_m;
+        f = new_f;
+    }
+    
+    
+    
+};
+
+class Articulo{
+    int id;
+    Lista<int> autores;
+    int area_conocimiento;
+    float evaluacion;
+
+public:
+    Articulo(){
+        id = -1;
+        area_conocimiento = -1;
+        evaluacion = 0;
+    }
+    
+    Articulo(int idp, int ac, float e){
+        //inicializar los atributos con los valores recibidos por parámetro
+    }
+    
+    void add_autor(int ida){
+        autores.add(ida);  // Añadir el autor a la lista de autores
+    }
+    
+    }
+    
+    int getID(){
+        return id;
+    }
+    
+    float get_evaluacion(){
+        return evaluacion;
+    }
+    
+    int get_area_conocimiento(){
+        return area_conocimiento;
+    }
+    
+    string to_string(){
+        string s = std::to_string(id)+" "+std::to_string(area_conocimiento)+" "+std::to_string(evaluacion) +" (";
+        int n = autores.get_size();
+        for(int i=0; i<n; i++){
+            s = s + std::to_string(autores.get(i)->getDato())+",";
+        }
+        s =  s+")";
+        return s;
+    }
+    
+    friend std::ostream& operator<<(std::ostream& os, Articulo& b) {
+		return os << b.to_string();
+	}
+	
+	friend std::ostream& operator<<(std::ostream& os, Articulo* b) {
+		return os << b->to_string();
+	}
+	
+	friend std::ostream& operator<<(std::ostream& os, Articulo b) {
+		return os << b.to_string();
+	}
+	
+
+};
+
+class LaConference{
+    Lista<Articulo*> articulos;
+    MatrizPublicaciones matriz;
+    int na;
+    int nc;
+    float min_eval;
+    
+public:
+    LaConference(){
+        na = 20;
+        nc = 5;
+        matriz = MatrizPublicaciones(3,nc);
+        min_eval = 2.0f;
+        generar_articulos(10);
+        print_articulos();
+        filtrar_articulos();
+        print_articulos();
+        generar_matriz();
+    }
+    
+    LaConference(int nn , int naa, int ncc, float min){
+        na = naa;
+        nc = ncc;
+        min_eval = min;
+        matriz = MatrizPublicaciones(3,nc);
+        generar_articulos(n);
+        print_articulos();
+        filtrar_articulos();
+        print_articulos();
+        generar_matriz();
+    }
+    
+    void generar_articulos(int n){
+        for (int i = 0; i < n; i++) {
+            int id = i;  // El ID del artículo
+            int area_conocimiento = rand() % nc;  // Genera un área de conocimiento aleatoria entre 0 y NC-1
+            float evaluacion = static_cast<float>(rand()) / static_cast<float>(RAND_MAX) * 5.0;  // Calificación aleatoria entre 0 y 5
+            Articulo* articulo = new Articulo(id, area_conocimiento, evaluacion);
+    
+            // Agregar entre 1 y 5 autores al artículo
+            int num_autores = rand() % 5 + 1;  // Genera entre 1 y 5 autores
+            for (int j = 0; j < num_autores; j++) {
+                int autor_id = rand() % na;  // Autor con ID entre 0 y NA-1
+                articulo->add_autor(autor_id);
+            }
+    
+            articulos.add(articulo);
+        }
+    }
+    
+    
+    void filtrar_articulos(){
+        int i = 0;
+        while (i < articulos.get_size()) {
+            Articulo* articulo = articulos.get(i)->getDato();
+            if (articulo->get_evaluacion() < min_eval) {
+                articulos.remove(i);  // Eliminar el artículo con baja calificación
+            } else {
+                i++;  // Solo avanzamos al siguiente artículo si no lo eliminamos
+            }
+        }
+    }
+    
+
+    }
+    
+    void print_articulos(){
+        articulos.print();
+    }
+    
+    void generar_matriz(){
+        for (int i = 0; i < articulos.get_size(); i++) {
+            Articulo* articulo = articulos.get(i)->getDato();
+            int area_conocimiento = articulo->get_area_conocimiento();
+            int id = articulo->getID();
+            matriz.addValInColumna(area_conocimiento, id);  // Añadir el ID del artículo en la columna correspondiente
+        }
+        cout << "La matriz de presentación de artículos es:" << endl;
+        matriz.print();
+    }
+    
+
+        cout<<"La matriz de presentación de artículos es:"<<endl;
+        matriz.print();
+        
+    }
+    
+    
+    
+};
+
+
+int main()
+{
+
+    srand(time(0));
+    
+    
+    //Prueba de Matriz de publicaciones
+    //El resultado será una matriz con 9 elementos en la columna 2
+    //para lo cual tuvo que haber añadido 5 filas más en el proceso
+
+    MatrizPublicaciones m(5,5);
+    
+    m.print();
+    cout<<endl;
+    for(int i=0; i<10; i++){
+        m.addValInColumna(2,i);
+    }
+    
+    m.print();
+    
+    LaConference c(30, 5, 5, 2.0);
+    
+    return 0;
+}
