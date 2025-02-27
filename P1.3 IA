@@ -1,1 +1,204 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+#include "Lista.h"
+#include "Vector.h"
+
+using namespace std;
+
+// Estructura para representar un libro
+class Libro {
+public:
+    int id;
+    string titulo;
+    int idAutor;
+    int idGenero;
+    int numPaginas;
+    double valor;
+
+    Libro() {
+        id(-1), titulo(""), idAutor(-1), idGenero(-1), numPaginas(0), valor(0.0)
+}
+    Libro(int id, string titulo, int idAutor, int idGenero, int numPaginas, double valor)
+        : id(id), titulo(titulo), idAutor(idAutor), idGenero(idGenero), numPaginas(numPaginas), valor(valor) {}
+
+    int getAutor() { return idAutor; }
+    string getTitulo() { return titulo; }
+    double getValor() { return valor; }
+
+    string to_string() {
+        ostringstream oss;
+        oss << fixed << setprecision(2);
+        oss << id << " " << titulo << " " << idAutor << " " << valor;
+        return oss.str();
+    }
+};
+
+// Clase Autor
+class Autor {
+    int id;
+    string nombre;
+    int edad;
+    Vector<Libro> libros;
+
+public:
+    Autor() : id(-1), nombre(""), edad(-1) {}
+    Autor(int id, string nombre, int edad) : id(id), nombre(nombre), edad(edad) {}
+
+    int getId() { return id; }
+    string getNombre() { return nombre; }
+    int getNumLibros() { return libros.getSize(); }
+
+    void addLibro(Libro l) { libros.add(l); }
+
+    string to_string() {
+        return std::to_string(id) + " " + nombre + " " + std::to_string(edad) + " años, " + std::to_string(libros.getSize()) + " libros";
+    }
+};
+
+// Clase Libreria
+class Libreria {
+public:
+    int id;
+    string nombre;
+    LinkedList<ItemInventario> inventario;
+
+    Libreria() : id(-1), nombre("") {}
+    Libreria(int id, string nombre) : id(id), nombre(nombre) {}
+
+    string getNombre() { return nombre; }
+
+    void addLibro(int idLibro, int copias) {
+        inventario.add(ItemInventario(idLibro, copias));
+    }
+
+    int getTotalLibros() {
+        int total = 0;
+        if (inventario.getSize() == 0) return 0;
+        for (int i = 0; i < inventario.getSize(); i++) {
+            total += inventario.get(i).getCantidad();
+        }
+        return total;
+    }
+
+    double getValorInventario(Vector<Libro>& libros) {
+        double totalValor = 0.0;
+        for (int i = 0; i < inventario.getSize(); i++) {
+            ItemInventario item = inventario.get(i);
+            for (int j = 0; j < libros.getSize(); j++) {
+                if (libros[j].id == item.getIdLibro()) {
+                    totalValor += item.getCantidad() * libros[j].getValor();
+                }
+            }
+        }
+        return totalValor;
+    }
+
+    void printInventario() { inventario.print(); }
+
+    string to_string() { return std::to_string(id) + " " + nombre; }
+};
+
+// Clase Editorial
+class Editorial {
+    Vector<Autor> autores;
+    Vector<Libro> libros;
+    Vector<Libreria> librerias;
+
+public:
+    Editorial() {}
+
+    void addAutor(int id, string nombre, int edad) {
+        autores.add(Autor(id, nombre, edad));
+    }
+
+    void addLibro(int id, string titulo, int idAutor, int idGenero, int numPaginas, double valor) {
+        for (int i = 0; i < autores.getSize(); i++) {
+            if (autores[i].getId() == idAutor) {
+                Libro nuevoLibro(id, titulo, idAutor, idGenero, numPaginas, valor);
+                libros.add(nuevoLibro);
+                autores[i].addLibro(nuevoLibro);
+                return;
+            }
+        }
+        cout << "Error: Autor no encontrado." << endl;
+    }
+
+    void addLibreria(int id, string nombre) {
+        librerias.add(Libreria(id, nombre));
+    }
+
+    void addLibroInventario(int idLibreria, int idLibro, int cant) {
+        for (int i = 0; i < librerias.getSize(); i++) {
+            if (librerias[i].id == idLibreria) {
+                librerias[i].addLibro(idLibro, cant);
+                return;
+            }
+        }
+    }
+
+    void printLibrerias() {
+        for (int i = 0; i < librerias.getSize(); i++) {
+            cout << librerias[i].to_string() << endl;
+            librerias[i].printInventario();
+        }
+    }
+
+    void autorMasTitulos() {
+        int maxIndex = 0;
+        for (int i = 1; i < autores.getSize(); i++) {
+            if (autores[i].getNumLibros() > autores[maxIndex].getNumLibros()) {
+                maxIndex = i;
+            }
+        }
+        cout << "El autor con más libros es " << autores[maxIndex].getNombre() << " con " << autores[maxIndex].getNumLibros() << " libros escritos.\n";
+    }
+
+    void autorMasLibrosInventario() {
+        Vector<int> inventarioAutores(autores.getSize(), 0);
+        for (int i = 0; i < librerias.getSize(); i++) {
+            for (int j = 0; j < librerias[i].inventario.getSize(); j++) {
+                ItemInventario item = librerias[i].inventario.get(j);
+                for (int k = 0; k < libros.getSize(); k++) {
+                    if (libros[k].id == item.getIdLibro()) {
+                        for (int a = 0; a < autores.getSize(); a++) {
+                            if (autores[a].getId() == libros[k].getAutor()) {
+                                inventarioAutores[a] += item.getCantidad();
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        int maxIndex = 0;
+        for (int i = 1; i < inventarioAutores.getSize(); i++) {
+            if (inventarioAutores[i] > inventarioAutores[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+
+        cout << "El autor con mayor inventario de libros es: " << autores[maxIndex].getNombre() << endl;
+    }
+
+    void libreriaMasInventario() {
+        int maxIndex = 0;
+        for (int i = 1; i < librerias.getSize(); i++) {
+            if (librerias[i].getTotalLibros() > librerias[maxIndex].getTotalLibros()) {
+                maxIndex = i;
+            }
+        }
+        cout << "La librería con mayor número de libros es " << librerias[maxIndex].getNombre() << endl;
+    }
+
+    void libreriaMasValorInventario() {
+        int maxIndex = 0;
+        for (int i = 1; i < librerias.getSize(); i++) {
+            if (librerias[i].getValorInventario(libros) > librerias[maxIndex].getValorInventario(libros)) {
+                maxIndex = i;
+            }
+        }
+        cout << "La librería con mayor valor total de libros es " << librerias[maxIndex].getNombre() << endl;
+    }
+};
 
