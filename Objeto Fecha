@@ -1,0 +1,282 @@
+#include<iostream>
+
+using namespace std;
+
+
+
+class Vector {
+    
+    int* v;
+    int capacidad;
+    int tamanno;
+public:
+    Vector () {
+        capacidad =10;
+        tamanno=0;
+        v= new int[capacidad];
+    }
+    Vector (int c) {
+        capacidad =c;
+        tamanno=0;
+        v= new int[capacidad];
+    }
+    
+    void add(int d) {
+        if(tamanno==capacidad) {
+            resize();
+        }
+        v[tamanno++]=d;
+    }
+    
+    void print() {
+        for(int i=0; i<tamanno; i++) {
+            cout<<v[i]<<" ";
+        }
+        cout<<endl;
+    }
+    
+    int getsize() {
+        return tamanno; 
+    }
+    int getcapacity() {
+        return capacidad; 
+    }
+    int geti(int n) {
+        if (n>=tamanno || n<0) {
+            return -1;
+        }
+        else {
+            return v[n];
+        }
+    }
+    
+    void resize() {
+        int* copia;
+        capacidad*=2;
+        copia=new int[capacidad];
+        for (int i=0; i<tamanno; i++) {
+            copia[i]=v[i];
+        }
+        delete []v;
+        v=copia;
+    }
+    
+    void insertar(int valor, int posicion) {
+        int* copia;
+        tamanno=tamanno+1;
+        if(tamanno==capacidad) {
+            resize();
+        }
+        copia=new int[capacidad];
+        for (int i=0; i<tamanno; i++) {
+            copia[i]=v[i];
+        }
+        v[posicion]=valor;
+        for(int i=posicion+1; i<tamanno;i++) {
+            v[i]= copia[posicion];
+            posicion++;
+        }
+    }
+    void eliminar (int posicion) {
+        for(int i=posicion;i<tamanno;i++) {
+            v[i]=v[i+1];
+        }
+        v[tamanno]=0;
+        tamanno=tamanno-1;
+    }
+    
+    int encontrar (int valor) {
+        int mensaje=-1;
+        for(int i=0;i<tamanno;i++) {
+            if(v[i]==valor) {
+                mensaje=i;
+                break;
+            }
+        }
+        return mensaje;
+    }
+    
+    ~Vector(){
+        delete[]v;
+    }
+    
+    int bbinaria (int f) {
+        int imin=0;
+        int imax=tamanno-1;
+        return bbbucle(f, imin, imax);
+    }
+    
+    int bbbucle (int f, int imin, int imax) {
+        int pivote=(imax+imin)/2;
+        if(v[pivote]==f) {
+            return pivote;
+        }
+        else {
+            if(imax<=imin) {
+                return -1;
+            }
+            
+            else if(f>v[pivote]) {
+                imin=pivote+1;
+                return bbbucle(f, imin, imax);
+            }
+            else {
+                imax=pivote;
+                return bbbucle(f, imin, imax);
+            }
+        }
+    }
+    
+    void bubblesort() {
+        int copia;
+        for(int i=1; i<tamanno; i++) {
+            if(v[i-1]>v[i]) {
+                copia=v[i];
+                v[i]=v[i-1];
+                v[i-1]=copia;
+                return bubblesort();
+            }
+        }
+    }
+    
+    void insertsort() {
+        insertsortr(tamanno-1);
+    }
+    
+    void insertsortr(int t) {
+        int min;
+        int minpos;
+        if(t>0) {
+            insertsortr(t-1);
+            min=v[t];
+            minpos=t-1;
+            while(minpos>=0 and v[minpos]>min) {
+                v[minpos+1]=v[minpos];
+                minpos=minpos-1;
+            }
+            v[minpos+1]=min;
+        }
+    }
+    
+    void selectsort() {
+        int min, aux;
+        for(int i=0; i<tamanno; i++) {
+            min=i;
+            for(int j=i+1; j<tamanno; j++) {
+                if(v[j]<v[min]) {
+                    min=j;
+                }
+            }
+            aux=v[i];
+            v[i]=v[min];
+            v[min]=aux;
+        } 
+    }
+    
+    void quicksort() {
+        int min=0;
+        int max=tamanno-1;
+        quicksortr(min, max);
+    }
+    
+    void quicksortr(int imin, int imax){
+        int i = imin;
+        int j = imax;
+        int pivot = v[(imin + imax) / 2]; 
+        int aux;
+        while (i <= j) { 
+            while (v[i] < pivot) {
+                i++; 
+            }
+            while (v[j] > pivot) {
+                j--;
+            }
+            if (i <= j) {
+                aux = v[i];
+                v[i] = v[j];
+                v[j] = aux;
+                i++;
+                j--;
+            }
+        }
+        if (imin < j) {
+            quicksortr(imin, j);
+        }
+        if (i < imax) {
+            quicksortr(i, imax);
+        }
+    }
+    
+    
+    
+    
+    
+    int der(int n) {
+        return (2*n)+1;
+    }
+    
+    int izq(int n) {
+        return 2*(n+1);
+    }
+    
+    int padre (int n) {
+        return (n-1)/2;
+    }
+    
+    int padrestotales(int n) {
+        return (n/2)-1;
+    }
+    
+    
+    
+    
+    
+    void heapify (int i, int t) {
+        if(der(i)<t) {
+            int mayind=i;
+            int may=v[i];
+            if (v[der(i)]>may) {
+                may=v[der(i)];
+                mayind=der(i);
+            }
+        
+            if (v[izq(i)]>may && izq(i)<t) {
+                may=v[izq(i)];
+                mayind=izq(i);
+            }
+        
+            if(may!=v[i]) {
+                int temp=v[i];
+                v[i] = v[mayind];
+                v[mayind]=temp;
+                heapify(mayind,t);
+            }
+        }
+        
+    }
+    
+    void heapsort() {
+        for (int i=padrestotales(tamanno);i>=0;i--) {
+            heapify(i, tamanno);
+        }
+        int tamanno_operativo=tamanno;
+        for (int i=tamanno-1;i > 0; i--) {
+            int temp= v[0];
+            v[0]=v[i];
+            v[i]=temp;
+            tamanno_operativo--;
+            heapify(0, tamanno_operativo);
+        }
+    }
+};
+
+
+
+int main()
+{
+    srand(time(0));
+    Vector v;
+    
+    
+    return 0;
+}
