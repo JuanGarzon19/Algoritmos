@@ -1,0 +1,78 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Estructura para representar una fecha
+struct Fecha {
+    int dia;
+    int mes;
+    int anio;
+};
+
+// Compara dos fechas. Devuelve true si f1 es anterior a f2.
+bool compararFechas(const Fecha& f1, const Fecha& f2) {
+    if (f1.anio != f2.anio) return f1.anio < f2.anio;
+    if (f1.mes != f2.mes)   return f1.mes < f2.mes;
+    return f1.dia < f2.dia;
+}
+
+// Intercambia dos fechas
+void intercambiar(Fecha& f1, Fecha& f2) {
+    Fecha temp = f1;
+    f1 = f2;
+    f2 = temp;
+}
+
+// Partición para quicksort
+int particionar(vector<Fecha>& fechas, int izquierda, int derecha) {
+    Fecha pivote = fechas[derecha];
+    int indiceMenor = izquierda - 1;
+
+    for (int i = izquierda; i < derecha; i++) {
+        if (compararFechas(fechas[i], pivote)) {
+            indiceMenor++;
+            intercambiar(fechas[indiceMenor], fechas[i]);
+        }
+    }
+
+    intercambiar(fechas[indiceMenor + 1], fechas[derecha]);
+    return indiceMenor + 1;
+}
+
+// Implementación recursiva de QuickSort
+void quickSort(vector<Fecha>& fechas, int izquierda, int derecha) {
+    if (izquierda < derecha) {
+        int indicePivote = particionar(fechas, izquierda, derecha);
+        quickSort(fechas, izquierda, indicePivote - 1);
+        quickSort(fechas, indicePivote + 1, derecha);
+    }
+}
+
+// Imprime las fechas en formato DD/MM/AAAA
+void imprimirFechas(const vector<Fecha>& fechas) {
+    for (const Fecha& f : fechas) {
+        cout << (f.dia < 10 ? "0" : "") << f.dia << "/"
+             << (f.mes < 10 ? "0" : "") << f.mes << "/"
+             << f.anio << endl;
+    }
+}
+
+int main() {
+    vector<Fecha> fechas = {
+        {15, 4, 2023},
+        {1, 1, 2021},
+        {31, 12, 2022},
+        {9, 9, 2020},
+        {15, 4, 2020}
+    };
+
+    cout << "Fechas antes de ordenar:\n";
+    imprimirFechas(fechas);
+
+    quickSort(fechas, 0, fechas.size() - 1);
+
+    cout << "\nFechas después de ordenar:\n";
+    imprimirFechas(fechas);
+
+    return 0;
+}
