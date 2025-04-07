@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Función para intercambiar dos elementos del arreglo
+void intercambiar(int& elemento1, int& elemento2) {
+    int temporal = elemento1;
+    elemento1 = elemento2;
+    elemento2 = temporal;
+}
+
+// Función para ubicar el pivote en su posición correcta y dividir el arreglo
+int particionar(vector<int>& arreglo, int indiceInicio, int indiceFin) {
+    int pivote = arreglo[indiceFin]; // Elegimos el último elemento como pivote
+    int indiceMenores = indiceInicio - 1; // Índice del elemento más pequeño
+
+    for (int indiceActual = indiceInicio; indiceActual < indiceFin; indiceActual++) {
+        // Si el elemento actual es menor o igual al pivote
+        if (arreglo[indiceActual] <= pivote) {
+            indiceMenores++;
+            intercambiar(arreglo[indiceMenores], arreglo[indiceActual]);
+        }
+    }
+
+    // Colocamos el pivote en su posición correcta
+    intercambiar(arreglo[indiceMenores + 1], arreglo[indiceFin]);
+    return indiceMenores + 1; // Devolvemos la posición del pivote
+}
+
+// Función recursiva de Quick Sort
+void quickSort(vector<int>& arreglo, int indiceInicio, int indiceFin) {
+    if (indiceInicio < indiceFin) {
+        // Obtenemos el índice del pivote después de la partición
+        int indicePivote = particionar(arreglo, indiceInicio, indiceFin);
+
+        // Ordenamos recursivamente las dos mitades
+        quickSort(arreglo, indiceInicio, indicePivote - 1);
+        quickSort(arreglo, indicePivote + 1, indiceFin);
+    }
+}
+
+// Función para imprimir el contenido del arreglo
+void imprimirArreglo(const vector<int>& arreglo) {
+    for (int elemento : arreglo) {
+        cout << elemento << " ";
+    }
+    cout << endl;
+}
+
+// Función principal
+int main() {
+    vector<int> arregloEjemplo = {34, 7, 23, 32, 5, 62};
+
+    cout << "Arreglo original: ";
+    imprimirArreglo(arregloEjemplo);
+
+    quickSort(arregloEjemplo, 0, arregloEjemplo.size() - 1);
+
+    cout << "Arreglo ordenado: ";
+    imprimirArreglo(arregloEjemplo);
+
+    return 0;
+}
